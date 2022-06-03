@@ -39,6 +39,15 @@ class CompanyRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param array $order
+     * @return Company[]
+     */
+    public function findAllOrder(array $order)
+    {
+        return $this->findBy([], $order);
+    }
+
 //    /**
 //     * @return Company[] Returns an array of Company objects
 //     */

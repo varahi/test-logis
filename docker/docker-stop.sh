@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker stop test_project_web
-docker stop test_project_phpmyadmin
-docker stop test_project_mysql
-docker stop test_project_mailhog
+docker stop test_logis_web
+docker stop test_logis_phpmyadmin
+docker stop test_logis_mysql
+docker stop test_logis_mailhog

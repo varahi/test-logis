@@ -8,7 +8,7 @@ services:
     build:
       context: web/
       dockerfile: Dockerfile
-    container_name: 'test_project_web'
+    container_name: 'test_logis_web'
     links:
       - web_mysql:db
 #      - redis
@@ -39,7 +39,7 @@ services:
     image: mariadb:10.3
     #restart: always
     #restart: on-failure
-    container_name: 'test_project_mysql'
+    container_name: 'test_logis_mysql'
     ports:
       - 3306:3306
     volumes:
@@ -55,7 +55,7 @@ services:
   # Phpmyadmin
   #######################################
   phpmyadmin:
-    container_name: 'test_project_phpmyadmin'
+    container_name: 'test_logis_phpmyadmin'
     image: phpmyadmin/phpmyadmin
     links:
       - web_mysql:db
@@ -71,7 +71,7 @@ services:
   #######################################
   mailhog:
     image: mailhog/mailhog
-    container_name: 'test_project_mailhog'
+    container_name: 'test_logis_mailhog'
     ports:
       - "1025:1025"
       - "8025:8025"

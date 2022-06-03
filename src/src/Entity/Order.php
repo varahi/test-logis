@@ -24,11 +24,6 @@ class Order
     private $title;
 
     /**
-     * @ORM\Column(type="datetime")
-     */
-    private $date;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -38,6 +33,21 @@ class Order
      * @ORM\ManyToOne(targetEntity=Delivery::class, inversedBy="orders")
      */
     private $delivery;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    public function __construct()
+    {
+        $this->created = new \DateTime();
+    }
+
+    public function __toString(): string
+    {
+        return 'ID - ' . $this->id . ' ' .$this->title;
+    }
 
     public function getId(): ?int
     {
@@ -52,18 +62,6 @@ class Order
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): self
-    {
-        $this->date = $date;
 
         return $this;
     }
@@ -88,6 +86,18 @@ class Order
     public function setDelivery(?Delivery $delivery): self
     {
         $this->delivery = $delivery;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeInterface $created): self
+    {
+        $this->created = $created;
 
         return $this;
     }

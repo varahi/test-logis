@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\CompanyRepository;
+use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=CompanyRepository::class)
+ * @ORM\Entity(repositoryClass=LocationRepository::class)
  */
-class Company
+class Location
 {
     /**
      * @ORM\Id
@@ -30,24 +30,12 @@ class Company
     private $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Delivery::class, inversedBy="companies")
-     */
-    private $delivery;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="company")
-     */
-    private $orders;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Delivery::class, mappedBy="company")
+     * @ORM\OneToMany(targetEntity=Delivery::class, mappedBy="departure")
      */
     private $deliveries;
 
     public function __construct()
     {
-        $this->delivery = new ArrayCollection();
-        $this->orders = new ArrayCollection();
         $this->deliveries = new ArrayCollection();
     }
 
@@ -88,15 +76,16 @@ class Company
     /**
      * @return Collection<int, Delivery>
      */
-    public function getDelivery(): Collection
+    public function getDeliveries(): Collection
     {
-        return $this->delivery;
+        return $this->deliveries;
     }
 
     public function addDelivery(Delivery $delivery): self
     {
-        if (!$this->delivery->contains($delivery)) {
-            $this->delivery[] = $delivery;
+        if (!$this->deliveries->contains($delivery)) {
+            $this->deliveries[] = $delivery;
+            $delivery->setDeparture($this);
         }
 
         return $this;
@@ -104,46 +93,13 @@ class Company
 
     public function removeDelivery(Delivery $delivery): self
     {
-        $this->delivery->removeElement($delivery);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
-    {
-        return $this->orders;
-    }
-
-    public function addOrder(Order $order): self
-    {
-        if (!$this->orders->contains($order)) {
-            $this->orders[] = $order;
-            $order->setCompany($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrder(Order $order): self
-    {
-        if ($this->orders->removeElement($order)) {
+        if ($this->deliveries->removeElement($delivery)) {
             // set the owning side to null (unless already changed)
-            if ($order->getCompany() === $this) {
-                $order->setCompany(null);
+            if ($delivery->getDeparture() === $this) {
+                $delivery->setDeparture(null);
             }
         }
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Delivery>
-     */
-    public function getDeliveries(): Collection
-    {
-        return $this->deliveries;
     }
 }

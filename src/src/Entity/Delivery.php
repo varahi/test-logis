@@ -22,17 +22,12 @@ class Delivery
     /**
      * @ORM\Column(type="string", length=255)
      */
+    private $title;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private $baseUrl;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $departure;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $destination;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -40,34 +35,54 @@ class Delivery
     private $weight;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="deliveries")
      */
-    private $date;
+    private $departure;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="deliveries")
      */
-    private $time;
+    private $destination;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Company::class, mappedBy="delivery")
+     * @ORM\Column(type="datetime")
      */
-    private $companies;
+    private $fromDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="delivery")
+     * @ORM\Column(type="datetime")
      */
-    private $orders;
+    private $toDate;
 
-    public function __construct()
+    /**
+     * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="deliveries")
+     */
+    private $company;
+
+    public function __toString(): string
     {
-        $this->companies = new ArrayCollection();
-        $this->orders = new ArrayCollection();
+        return 'ID - ' . $this->id . ' ' .$this->departure .' - '. $this->destination;
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title): void
+    {
+        $this->title = $title;
     }
 
     public function getBaseUrl(): ?string
@@ -78,30 +93,6 @@ class Delivery
     public function setBaseUrl(string $baseUrl): self
     {
         $this->baseUrl = $baseUrl;
-
-        return $this;
-    }
-
-    public function getDeparture(): ?string
-    {
-        return $this->departure;
-    }
-
-    public function setDeparture(string $departure): self
-    {
-        $this->departure = $departure;
-
-        return $this;
-    }
-
-    public function getDestination(): ?string
-    {
-        return $this->destination;
-    }
-
-    public function setDestination(string $destination): self
-    {
-        $this->destination = $destination;
 
         return $this;
     }
@@ -118,83 +109,62 @@ class Delivery
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDeparture(): ?Location
     {
-        return $this->date;
+        return $this->departure;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDeparture(?Location $departure): self
     {
-        $this->date = $date;
+        $this->departure = $departure;
 
         return $this;
     }
 
-    public function getTime(): ?\DateTimeInterface
+    public function getDestination(): ?Location
     {
-        return $this->time;
+        return $this->destination;
     }
 
-    public function setTime(\DateTimeInterface $time): self
+    public function setDestination(?Location $destination): self
     {
-        $this->time = $time;
+        $this->destination = $destination;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Company>
-     */
-    public function getCompanies(): Collection
+    public function getFromDate(): ?\DateTimeInterface
     {
-        return $this->companies;
+        return $this->fromDate;
     }
 
-    public function addCompany(Company $company): self
+    public function setFromDate(\DateTimeInterface $fromDate): self
     {
-        if (!$this->companies->contains($company)) {
-            $this->companies[] = $company;
-            $company->addDelivery($this);
-        }
+        $this->fromDate = $fromDate;
 
         return $this;
     }
 
-    public function removeCompany(Company $company): self
+    public function getToDate(): ?\DateTimeInterface
     {
-        if ($this->companies->removeElement($company)) {
-            $company->removeDelivery($this);
-        }
+        return $this->toDate;
+    }
+
+    public function setToDate(\DateTimeInterface $toDate): self
+    {
+        $this->toDate = $toDate;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
+    public function getCompany(): ?Company
     {
-        return $this->orders;
+        return $this->company;
     }
 
-    public function addOrder(Order $order): self
+    public function setCompany(?Company $company): self
     {
-        if (!$this->orders->contains($order)) {
-            $this->orders[] = $order;
-            $order->setDelivery($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrder(Order $order): self
-    {
-        if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
-            if ($order->getDelivery() === $this) {
-                $order->setDelivery(null);
-            }
-        }
+        $this->company = $company;
 
         return $this;
     }

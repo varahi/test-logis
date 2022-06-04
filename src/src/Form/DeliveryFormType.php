@@ -2,21 +2,25 @@
 
 namespace App\Form;
 
-use App\Entity\Order;
+use App\Entity\Delivery;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class OrderFormType extends AbstractType
+class DeliveryFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title')
-            //->add('created')
+            ->add('baseUrl')
+            ->add('weight')
+            ->add('fromDate')
+            ->add('toDate')
+            ->add('departure')
+            ->add('destination')
             ->add('company')
-            ->add('delivery')
 
             ->add('submit', SubmitType::class, [
                 'label' => 'form.submit',
@@ -31,7 +35,7 @@ class OrderFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Order::class,
+            'data_class' => Delivery::class,
         ]);
     }
 }

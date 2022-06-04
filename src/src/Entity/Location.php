@@ -41,7 +41,7 @@ class Location
 
     public function __toString(): string
     {
-        return 'ID - ' . $this->id . ' ' .$this->title;
+        return $this->title;
     }
 
     public function getId(): ?int

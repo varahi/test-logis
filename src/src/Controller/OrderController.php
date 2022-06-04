@@ -62,10 +62,6 @@ class OrderController extends AbstractController
             $notifier->send(new Notification($message, ['browser']));
         }
 
-        //return $this->render('order/index.html.twig', [
-        //    'controller_name' => 'OrderController',
-        //]);
-
         return new Response($this->twig->render('order/order_form.html.twig', [
             'form' => $form->createView(),
         ]));

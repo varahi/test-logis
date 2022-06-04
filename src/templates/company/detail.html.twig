@@ -7,4 +7,15 @@
     <div>
         {{ company.description }}
     </div>
+
+    <h3>{{ 'Company directions' }}</h3>
+
+    {% for delivery in company.delivery %}
+        {{ delivery.id }} - {{ delivery.departure }} {{ delivery.fromDate|date('Y-m-d') }} - {{ delivery.destination }} {{ delivery.toDate|date('Y-m-d') }}
+        <a class="" href="{{ path('app_edit_delivery', { id: delivery.id, company: company.id}) }}">{{ 'Edit delivery'|trans }}</a>
+        <br /><br />
+    {% endfor %}
+
+
+
 {% endblock %}

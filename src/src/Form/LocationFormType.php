@@ -2,25 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\Delivery;
+use App\Entity\Location;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class DeliveryFormType extends AbstractType
+class LocationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title')
-            ->add('baseUrl')
-            ->add('weight')
-            ->add('fromDate')
-            ->add('toDate')
-            ->add('departure')
-            ->add('destination')
-
+            ->add('description')
             ->add('submit', SubmitType::class, [
                 'label' => 'form.submit',
                 'translation_domain' => 'messages',
@@ -34,7 +28,7 @@ class DeliveryFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Delivery::class,
+            'data_class' => Location::class,
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -19,7 +20,9 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        return parent::index();
+        //return parent::index();
+        $routeBuilder = $this->get(AdminUrlGenerator::class);
+        return $this->redirect($routeBuilder->setController(CompanyCrudController::class)->generateUrl());
     }
 
     public function configureDashboard(): Dashboard
@@ -28,17 +31,9 @@ class DashboardController extends AbstractDashboardController
             ->setTitle('Test Admin Panel');
     }
 
-    /*
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
-    }
-    */
-
-    public function configureMenuItems(): iterable
-    {
-        yield MenuItem::linkToRoute('Back to the site', 'fa fa-home', 'app_home');
+        yield MenuItem::linkToRoute('Back to the site', 'fa fa-home', 'app_company_list');
 
         yield MenuItem::section('Company and orders');
         yield MenuItem::subMenu('Company', 'fa fa-tags')->setSubItems([

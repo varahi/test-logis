@@ -2,20 +2,26 @@
 
 {% block title %}Hello CompanyController!{% endblock %}
 
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
 {% block body %}
     <h1>{{ company.title }}</h1>
     <div>
         {{ company.description }}
     </div>
 
-    <h3>{{ 'Company directions' }}</h3>
+    {% if company.delivery is not empty %}
+        <h3>{{ 'Company deliveries' }}</h3>
+        {% for delivery in company.delivery %}
+            {{ delivery.id }} - {{ delivery.departure }} {{ delivery.fromDate|date('Y-m-d') }} - {{ delivery.destination }} {{ delivery.toDate|date('Y-m-d') }}
+            <a class="" href="{{ path('app_edit_delivery', { id: delivery.id, company: company.id}) }}">{{ 'Edit delivery'|trans }}</a>
+            <br /><br />
+        {% endfor %}
+    {% else %}
+        <p>{{ 'No deliveries'|trans }}</p>
+    {% endif %}
 
-    {% for delivery in company.delivery %}
-        {{ delivery.id }} - {{ delivery.departure }} {{ delivery.fromDate|date('Y-m-d') }} - {{ delivery.destination }} {{ delivery.toDate|date('Y-m-d') }}
-        <a class="" href="{{ path('app_edit_delivery', { id: delivery.id, company: company.id}) }}">{{ 'Edit delivery'|trans }}</a>
-        <br /><br />
-    {% endfor %}
-
+    <h3>{{ 'New delivery' }}</h3>
+    {{ form(form) }}
 
 
 {% endblock %}

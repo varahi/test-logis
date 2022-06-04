@@ -55,7 +55,7 @@ class Delivery
     private $toDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="deliveries")
+     * @ORM\ManyToOne(targetEntity=Company::class, inversedBy="delivery")
      */
     private $company;
 

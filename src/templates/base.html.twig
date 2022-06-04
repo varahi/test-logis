@@ -22,7 +22,10 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ path('app_home') }}">{{ 'Items'|trans }}</a>
+                    <a class="nav-link" href="{{ path('app_company_list') }}">{{ 'Company list'|trans }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_location_list') }}">{{ 'Location list'|trans }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_order_form') }}">{{ 'Order form'|trans }}</a>
@@ -37,6 +40,7 @@
 
 <main class="container">
     <div class="bg-light p-5 rounded">
+        {% include 'partials/_message.html.twig' %}
         {% block body %}{% endblock %}
     </div>
 </main>
@@ -44,8 +48,6 @@
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
-
-
 
 </body>
 </html>

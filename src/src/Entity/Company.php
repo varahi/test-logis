@@ -30,11 +30,6 @@ class Company
     private $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Delivery::class, inversedBy="companies")
-     */
-    private $delivery;
-
-    /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="company")
      */
     private $orders;
@@ -42,13 +37,12 @@ class Company
     /**
      * @ORM\OneToMany(targetEntity=Delivery::class, mappedBy="company")
      */
-    private $deliveries;
+    private $delivery;
 
     public function __construct()
     {
-        $this->delivery = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        $this->deliveries = new ArrayCollection();
+        $this->delivery = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -86,30 +80,6 @@ class Company
     }
 
     /**
-     * @return Collection<int, Delivery>
-     */
-    public function getDelivery(): Collection
-    {
-        return $this->delivery;
-    }
-
-    public function addDelivery(Delivery $delivery): self
-    {
-        if (!$this->delivery->contains($delivery)) {
-            $this->delivery[] = $delivery;
-        }
-
-        return $this;
-    }
-
-    public function removeDelivery(Delivery $delivery): self
-    {
-        $this->delivery->removeElement($delivery);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Order>
      */
     public function getOrders(): Collection
@@ -142,8 +112,30 @@ class Company
     /**
      * @return Collection<int, Delivery>
      */
-    public function getDeliveries(): Collection
+    public function getDelivery(): Collection
     {
-        return $this->deliveries;
+        return $this->delivery;
+    }
+
+    public function addDelivery(Delivery $delivery): self
+    {
+        if (!$this->delivery->contains($delivery)) {
+            $this->delivery[] = $delivery;
+            $delivery->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDelivery(Delivery $delivery): self
+    {
+        if ($this->delivery->removeElement($delivery)) {
+            // set the owning side to null (unless already changed)
+            if ($delivery->getCompany() === $this) {
+                $delivery->setCompany(null);
+            }
+        }
+
+        return $this;
     }
 }

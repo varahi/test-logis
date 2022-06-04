@@ -3,9 +3,16 @@
 {% block title %}Hello CompanyController!{% endblock %}
 
 {% block body %}
+    <div id="root"></div>
+
+    {#
+    Tradidional rendering
+    <h1>{{ 'Company list'|trans }}</h1>
     {% for company in companies %}
         <a class="" href="{{ path('app_company_detail', { id: company.id}) }}">
             {{ company.title }}
         </a><br />
     {% endfor %}
+    #}
+
 {% endblock %}

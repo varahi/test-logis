@@ -4,12 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Delivery;
 use App\Form\DeliveryFormType;
-use App\Form\Invoice\EditInvoiceFormType;
-use App\Form\Objet\EditEquipmentFormType;
 use App\Repository\CompanyRepository;
-use App\Repository\DeliveryRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Notifier\Notification\Notification;
@@ -18,22 +16,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use App\Entity\Company;
+use App\Controller\Traits\DataTrait;
 
 class CompanyController extends AbstractController
 {
+    use DataTrait;
+
     private $twig;
+
+    private $doctrine;
 
     /**
      * @param Environment $twig
+     * @param ManagerRegistry $doctrine
      */
     public function __construct(
-        Environment $twig
+        Environment $twig,
+        ManagerRegistry $doctrine
     ) {
         $this->twig = $twig;
+        $this->doctrine = $doctrine;
     }
 
     /**
-     * @Route("/", name="app_home")
+     * @Route("/companies", name="app_company_list")
      */
     public function index(
         CompanyRepository $companyRepository
@@ -41,19 +47,60 @@ class CompanyController extends AbstractController
         $companies = $companyRepository->findAllOrder(['id' => 'ASC']);
 
         return new Response($this->twig->render('company/index.html.twig', [
-            //'add_task_form' => $form->createView(),
             'companies' => $companies
         ]));
+    }
+
+    /**
+     * @Route("/api/companies", name="company_list")
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getCompanyList(
+        CompanyRepository $companyRepository
+    ) {
+        $companies = $companyRepository->findAllOrder(['id' => 'ASC']);
+        $arrData = $this->getJsonArrData($companies);
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->setContent(\json_encode($arrData));
+
+        return $response;
     }
 
     /**
      * @Route("/company-detail/company-{id}", name="app_company_detail")
      */
     public function detail(
-        Company $company
+        Request $request,
+        Company $company,
+        TranslatorInterface $translator,
+        NotifierInterface $notifier
     ): Response {
+        $delivery = new Delivery();
+        $form = $this->createForm(DeliveryFormType::class, $delivery, [
+            'action' => $this->generateUrl('app_company_detail', ['id' => $company->getId()]),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $entityManager = $this->doctrine->getManager();
+            $delivery->setCompany($company);
+            $entityManager->persist($delivery);
+            $entityManager->flush();
+
+            // Message
+            $message = $translator->trans('Reservation updated', array(), 'flash');
+            $notifier->send(new Notification($message, ['browser']));
+            $referer = $request->headers->get('referer');
+            return new RedirectResponse($referer);
+        }
+
         return new Response($this->twig->render('company/detail.html.twig', [
-            'company' => $company
+            'company' => $company,
+            'form' => $form->createView(),
         ]));
     }
 
@@ -62,7 +109,6 @@ class CompanyController extends AbstractController
      */
     public function editDelivery(
         Request $request,
-        ManagerRegistry $doctrine,
         Delivery $delivery,
         CompanyRepository $companyRepository,
         TranslatorInterface $translator,
@@ -70,35 +116,17 @@ class CompanyController extends AbstractController
     ): Response {
         $companyId = $request->query->get('company');
         $company = $companyRepository->findOneBy(['id' => $companyId]);
-        $url = $this->generateUrl('app_company_detail', ['id' => $delivery->getId(), 'company' => $companyId]);
+        $url = $this->generateUrl('app_company_detail', ['id' => $delivery->getCompany()->getId()]);
 
-        //$delivery = new Delivery();
         $form = $this->createForm(DeliveryFormType::class, $delivery, [
-            //'action' => $this->generateUrl('app_edit_delivery', ['id' => $delivery->getId(), 'company' => $companyId]),
             'action' => $this->generateUrl('app_edit_delivery', ['id' => $delivery->getId()]),
             'method' => 'POST',
         ]);
 
-        /*
-        $form = $this->createForm(EditInvoiceFormType::class, $invoice, [
-            'action' => $url,
-            'userId' => $user->getId(),
-            'method' => 'POST',
-        ]);
-        */
-
-        /*
-            $form = $this->createForm(EditEquipmentFormType::class, $equipment, [
-                'action' => $this->generateUrl('app_edit_equipment', ['id' => $equipment->getId()]),
-                //'apartmentId' => $equipment->getId(),
-                'method' => 'POST'
-            ]);
-         */
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $doctrine->getManager();
+            $entityManager = $this->doctrine->getManager();
             $entityManager->persist($delivery);
             $entityManager->flush();
 

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Order;
 use App\Form\OrderFormType;
+use App\Repository\CompanyRepository;
+use App\Repository\DeliveryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,6 +46,8 @@ class OrderController extends AbstractController
         Request $request,
         ManagerRegistry $doctrine,
         TranslatorInterface $translator,
+        DeliveryRepository $deliveryRepository,
+        CompanyRepository $companyRepository,
         NotifierInterface $notifier
     ): Response {
         $order = new Order();
@@ -54,10 +58,15 @@ class OrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $post = $request->request->get('order_form');
+            $delivery = $deliveryRepository->findOneBy(['id' => $post['delivery']]);
+            $company = $companyRepository->findOneByDelivery($delivery->getId());
+            $order->setDelivery($delivery);
+            $order->setCompany($company);
             $entityManager = $doctrine->getManager();
             $entityManager->persist($order);
             $entityManager->flush();
-
+            // Message and redirect
             $message = $translator->trans('Reservation updated', array(), 'flash');
             $notifier->send(new Notification($message, ['browser']));
         }

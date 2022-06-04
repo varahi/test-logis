@@ -16,6 +16,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CompanyRepository extends ServiceEntityRepository
 {
+    public const COMPANY_TABLE = 'App\Entity\Company';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Company::class);
@@ -46,6 +48,21 @@ class CompanyRepository extends ServiceEntityRepository
     public function findAllOrder(array $order)
     {
         return $this->findBy([], $order);
+    }
+
+    /**
+     * @param int $id
+     * @return int|mixed|string
+     */
+    public function findOneByDelivery(int $id)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('c');
+        $qb->from(self::COMPANY_TABLE, 'c');
+        $qb->join('c.delivery', 'd');
+        $qb->where($qb->expr()->eq('d.id', $id));
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
 //    /**

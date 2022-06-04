@@ -15,9 +15,8 @@ class OrderFormType extends AbstractType
         $builder
             ->add('title')
             //->add('created')
-            ->add('company')
+            //->add('company')
             ->add('delivery')
-
             ->add('submit', SubmitType::class, [
                 'label' => 'form.submit',
                 'translation_domain' => 'messages',

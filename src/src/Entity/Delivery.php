@@ -61,7 +61,6 @@ class Delivery
 
     public function __toString(): string
     {
-        //return 'ID - ' . $this->id . ' ' .$this->departure .' - '. $this->destination;
         return $this->departure .' '.$this->fromDate->format('Y-m-d').' - '.$this->destination .' '.$this->toDate->format('Y-m-d');
     }
 

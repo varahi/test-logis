@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Location;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,7 +14,18 @@ class LocationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
+            ->add(
+                'title',
+                TextType::class,
+                [
+                    'required' => true,
+                    'attr' => [
+                        'placeholder' => 'Title'
+                    ],
+                    'label' => 'Title *',
+                    'translation_domain' => 'messages',
+                ]
+            )
             ->add('description')
             ->add('submit', SubmitType::class, [
                 'label' => 'form.submit',
